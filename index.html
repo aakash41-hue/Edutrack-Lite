@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack | Student Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="topbar">
+        <h1>EduTrack</h1>
+        <span>Coordinator Dashboard</span>
+    </header>
+
+    <main class="dashboard">
+
+        <section class="page-heading">
+            <h2>Student Management</h2>
+            <p>Add and manage student academic records.</p>
+        </section>
+
+        <section class="form-card">
+            <h3>Add New Student</h3>
+
+            <form id="studentForm">
+
+                <div class="form-grid">
+
+                    <div>
+                        <label for="roll_number">Roll Number *</label>
+                        <input type="text" id="roll_number"
+                               placeholder="Enter roll number" required>
+                    </div>
+
+                    <div>
+                        <label for="full_name">Full Name *</label>
+                        <input type="text" id="full_name"
+                               placeholder="Enter student name" required>
+                    </div>
+
+                    <div>
+                        <label for="department">Department *</label>
+                        <input type="text" id="department"
+                               placeholder="Example: CSE" required>
+                    </div>
+
+                    <div>
+                        <label for="year">Academic Year *</label>
+                        <select id="year" required>
+                            <option value="">Select year</option>
+                            <option value="1">First Year</option>
+                            <option value="2">Second Year</option>
+                            <option value="3">Third Year</option>
+                            <option value="4">Fourth Year</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="section">Section</label>
+                        <input type="text" id="section"
+                               placeholder="Example: K25">
+                    </div>
+
+                </div>
+
+                <button type="submit">Add Student</button>
+
+                <p id="message"></p>
+
+            </form>
+        </section>
+
+        <section class="table-card">
+            <h3>Registered Students</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Year</th>
+                            <th>Section</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="studentList">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+<section class="form-card">
+    <h3>Add New Subject</h3>
+
+    <form id="subjectForm">
+
+        <div class="form-grid">
+
+            <div>
+                <label for="subject_code">Subject Code *</label>
+                <input
+                    type="text"
+                    id="subject_code"
+                    placeholder="Example: CSE205"
+                    required
+                >
+            </div>
+
+            <div>
+                <label for="subject_name">Subject Name *</label>
+                <input
+                    type="text"
+                    id="subject_name"
+                    placeholder="Example: Data Structures"
+                    required
+                >
+            </div>
+
+        </div>
+
+        <button type="submit">Add Subject</button>
+
+        <p id="subjectMessage"></p>
+
+    </form>
+</section>
+
+<section class="table-card">
+    <h3>Registered Subjects</h3>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject Code</th>
+                    <th>Subject Name</th>
+                </tr>
+            </thead>
+
+            <tbody id="subjectList"></tbody>
+        </table>
+    </div>
+</section>
+
+
+<section class="form-card">
+    <h3>Enter Student Marks</h3>
+
+    <form id="marksForm">
+
+        <div class="form-grid">
+
+            <div>
+                <label for="markStudent">Select Student *</label>
+                <select id="markStudent" required>
+                    <option value="">Choose student</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="markSubject">Select Subject *</label>
+                <select id="markSubject" required>
+                    <option value="">Choose subject</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="assessmentName">Assessment *</label>
+                <input type="text" id="assessmentName"
+                       placeholder="Example: Mid Term 1" required>
+            </div>
+
+            <div>
+                <label for="marksObtained">Marks Obtained *</label>
+                <input type="number" id="marksObtained"
+                       min="0" step="0.01" placeholder="Example: 75" required>
+            </div>
+
+            <div>
+                <label for="maxMarks">Maximum Marks *</label>
+                <input type="number" id="maxMarks"
+                       min="0.01" step="0.01" placeholder="Example: 100" required>
+            </div>
+
+        </div>
+
+        <button type="submit">Save Marks</button>
+        <p id="marksMessage"></p>
+
+    </form>
+</section>
+
+<section class="table-card">
+    <h3>Marks Records</h3>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Assessment</th>
+                    <th>Marks</th>
+                    <th>Maximum</th>
+                </tr>
+            </thead>
+
+            <tbody id="marksList"></tbody>
+        </table>
+    </div>
+</section>
+
+
+<section class="form-card">
+    <h3>Record Student Attendance</h3>
+
+    <form id="attendanceForm">
+
+        <div class="form-grid">
+
+            <div>
+                <label for="attendanceStudent">Select Student *</label>
+                <select id="attendanceStudent" required>
+                    <option value="">Choose student</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="attendanceSubject">Select Subject *</label>
+                <select id="attendanceSubject" required>
+                    <option value="">Choose subject</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="totalClasses">Total Classes *</label>
+                <input type="number" id="totalClasses"
+                       min="1" required>
+            </div>
+
+            <div>
+                <label for="attendedClasses">Classes Attended *</label>
+                <input type="number" id="attendedClasses"
+                       min="0" required>
+            </div>
+
+        </div>
+
+        <button type="submit">Save Attendance</button>
+
+        <p id="attendanceMessage"></p>
+
+    </form>
+</section>
+
+<section class="table-card">
+    <h3>Attendance Records</h3>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Total Classes</th>
+                    <th>Attended</th>
+                    <th>Attendance %</th>
+                </tr>
+            </thead>
+
+            <tbody id="attendanceList"></tbody>
+        </table>
+    </div>
+</section>
+
+
+<section class="table-card">
+    <h3>Student Performance Overview</h3>
+    <p class="section-description">
+        Academic performance and attendance-based risk assessment.
+    </p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Student Name</th>
+                    <th>Average Marks</th>
+                    <th>Attendance</th>
+                    <th>Risk Level</th>
+                </tr>
+            </thead>
+
+            <tbody id="performanceList"></tbody>
+        </table>
+    </div>
+</section>
+
+
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

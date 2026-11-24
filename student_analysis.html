@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Analysis | EduTrack</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar-brand">
+        <h1>EduTrack <span class="brand-lite">Lite</span></h1>
+        <span class="portal-badge">Student Performance Profile</span>
+    </div>
+    <div class="topbar-nav">
+        <a href="/" class="topbar-link">&larr; Coordinator Workspace</a>
+        <a href="/faculty" class="topbar-link">Faculty Portal &rarr;</a>
+    </div>
+</header>
+
+<main class="dashboard">
+
+    <section class="page-heading">
+        <h2>Individual Student Analysis</h2>
+        <p>Academic performance and attendance report</p>
+    </section>
+
+    <section class="table-card">
+        <h3 id="studentName">Loading student...</h3>
+        <p id="studentDetails"></p>
+    </section>
+
+    <section class="analysis-metrics">
+
+        <div class="metric-card">
+            <h3>Average Marks</h3>
+            <h2 id="averageMarks">--</h2>
+        </div>
+
+        <div class="metric-card">
+            <h3>Attendance</h3>
+            <h2 id="attendancePercentage">--</h2>
+        </div>
+
+        <div class="metric-card">
+            <h3>Risk Level</h3>
+            <h2 id="riskLevel">--</h2>
+        </div>
+
+    </section>
+
+    <!-- AI Performance Insights -->
+    <section class="table-card ai-insights-card">
+
+        <div class="ai-insights-heading">
+            <div>
+                <h3>AI Performance Insights</h3>
+                <p>Personalized analysis powered by local AI</p>
+            </div>
+
+            <button id="generateInsightsBtn" type="button">
+                Generate AI Insights
+            </button>
+        </div>
+
+        <p id="aiStatus" class="ai-status">
+            Generate insights to understand this student's performance.
+        </p>
+
+        <div id="aiInsightsContent" class="ai-insights-content"
+             hidden></div>
+
+    </section>
+
+    <section class="table-card">
+        <h3>Assessment Records</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Assessment</th>
+                        <th>Marks</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody id="analysisMarks"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="table-card">
+        <h3>Attendance Records</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Total Classes</th>
+                        <th>Attended</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody id="analysisAttendance"></tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='student_analysis.js') }}"></script>
+
+</body>
+</html>

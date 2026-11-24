@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack | Student Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* ====================================================================
+           STUDENT DASHBOARD — SCOPED STYLES
+           Extends the shared design system; never overrides coordinator or
+           faculty components.
+        ==================================================================== */
+
+        /* Teal-blue student theme accent (distinct from coordinator green) */
+        :root {
+            --student-accent:        #1e6b7a;
+            --student-accent-hover:  #174f5b;
+            --student-subtle:        #e9f4f6;
+            --student-border:        #bdd9de;
+            --student-sidebar-bg:    #132535;
+            --student-sidebar-hover: #1a3147;
+            --student-sidebar-active:#1e3d57;
+            --student-sidebar-border:#1e3448;
+            --student-sidebar-text:  #9db8c8;
+            --student-sidebar-muted: #5d8098;
+            --student-sidebar-accent:#4fa3bb;
+        }
+
+        /* Sidebar — student colour scheme */
+        .student-sidebar-theme {
+            background: var(--student-sidebar-bg);
+            border-right-color: var(--student-sidebar-border);
+            color: var(--student-sidebar-text);
+        }
+
+        .student-sidebar-theme .sidebar-brand h1 { color: #ffffff; }
+        .student-sidebar-theme .sidebar-brand p   { color: var(--student-sidebar-muted); }
+        .student-sidebar-theme .sidebar-label     { color: var(--student-sidebar-muted); }
+
+        .student-sidebar-theme .nav-item          { color: var(--student-sidebar-text); }
+        .student-sidebar-theme .nav-item svg      { stroke: var(--student-sidebar-muted); }
+        .student-sidebar-theme .nav-item:hover    { background: var(--student-sidebar-hover); color: #fff; }
+        .student-sidebar-theme .nav-item:hover svg { stroke: var(--student-sidebar-text); }
+        .student-sidebar-theme .nav-item.active   { background: var(--student-sidebar-active); color: #fff; border-left-color: var(--student-sidebar-accent); }
+        .student-sidebar-theme .nav-item.active svg { stroke: var(--student-sidebar-accent); }
+        .student-sidebar-theme .sidebar-footer    { border-top-color: rgba(255,255,255,0.07); }
+        .student-sidebar-theme .sidebar-footer span { color: #fff; }
+        .student-sidebar-theme .sidebar-footer small { color: var(--student-sidebar-muted); }
+        .student-sidebar-theme .sidebar-portal-link { color: var(--student-sidebar-muted); border-top-color: rgba(255,255,255,0.05); }
+        .student-sidebar-theme .sidebar-portal-link:hover { color: #fff; }
+        .student-sidebar-theme .sidebar-logout-link {
+            color: #e2a2a2;
+            font-size: 12px;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+        .student-sidebar-theme .sidebar-logout-link:hover { color: #ffbcbc; }
+
+        /* Role badge */
+        .role-student {
+            background: var(--student-subtle);
+            color: var(--student-accent);
+            border: 1px solid var(--student-border);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        /* Profile banner */
+        .student-profile-banner {
+            background: linear-gradient(135deg, var(--student-sidebar-bg) 0%, #1b3a52 100%);
+            border: 1px solid var(--student-border);
+            border-radius: var(--radius-md);
+            padding: 24px 28px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #fff;
+        }
+
+        .profile-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--student-sidebar-active);
+            border: 2px solid var(--student-sidebar-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .profile-info h2 {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin-top: 6px;
+        }
+
+        .profile-meta-item {
+            font-size: 12px;
+            color: rgba(255,255,255,0.72);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .profile-meta-item strong {
+            color: rgba(255,255,255,0.95);
+            font-weight: 500;
+        }
+
+        /* Stat card highlight (student teal) */
+        .stat-card.stat-highlight {
+            border-top: 3px solid var(--student-accent);
+        }
+
+        .stat-card.stat-highlight h2 {
+            color: var(--student-accent);
+        }
+
+        /* Attendance shortfall warning */
+        .shortage-banner {
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .shortage-banner.critical {
+            background: var(--risk-high-bg);
+            border: 1px solid var(--risk-high-border);
+            color: var(--risk-high-text);
+        }
+
+        .shortage-banner.warning {
+            background: var(--risk-medium-bg);
+            border: 1px solid var(--risk-medium-border);
+            color: var(--risk-medium-text);
+        }
+
+        .shortage-banner-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .shortage-banner strong { font-weight: 600; }
+
+        .shortage-extra {
+            margin-top: 4px;
+            font-size: 11.5px;
+            opacity: 0.85;
+        }
+
+        /* Subject performance cards */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        .subject-perf-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .subject-perf-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .subject-code-badge {
+            background: var(--student-subtle);
+            color: var(--student-accent);
+            border: 1px solid var(--student-border);
+            border-radius: var(--radius-sm);
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .subject-perf-name {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .subject-perf-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Progress bar */
+        .perf-bar-wrap {
+            margin: 10px 0 6px;
+        }
+
+        .perf-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .perf-bar-label strong { color: var(--text-primary); font-weight: 600; }
+
+        .perf-bar-bg {
+            height: 7px;
+            background: var(--bg-surface-subtle);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .perf-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+
+        .perf-bar-fill.marks-bar {
+            background: var(--student-accent);
+        }
+
+        .perf-bar-fill.att-bar {
+            background: var(--brand-primary);
+        }
+
+        .perf-bar-fill.bar-high   { background: var(--risk-low-text); }
+        .perf-bar-fill.bar-medium { background: var(--risk-medium-text); }
+        .perf-bar-fill.bar-low    { background: var(--risk-high-text); }
+
+        /* Assessment detail accordion */
+        .assess-toggle {
+            background: none;
+            border: none;
+            font-size: 12px;
+            color: var(--student-accent);
+            cursor: pointer;
+            padding: 4px 0;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.15s;
+        }
+
+        .assess-toggle:hover { color: var(--student-accent-hover); }
+
+        .assess-list {
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color-subtle);
+            padding-top: 10px;
+            display: none;
+        }
+
+        .assess-list.open { display: block; }
+
+        .assess-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 12.5px;
+            border-bottom: 1px solid var(--border-color-subtle);
+        }
+
+        .assess-row:last-child { border-bottom: none; }
+        .assess-row-name { color: var(--text-secondary); }
+        .assess-row-score { color: var(--text-primary); font-weight: 600; }
+
+        /* Attendance table rows */
+        .att-pct-good    { color: var(--risk-low-text);   font-weight: 600; }
+        .att-pct-warn    { color: var(--risk-medium-text); font-weight: 600; }
+        .att-pct-crit    { color: var(--risk-high-text);  font-weight: 600; }
+
+        /* AI Insights panel */
+        .ai-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .ai-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color-subtle);
+        }
+
+        .ai-panel-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .ai-panel-header p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        #studentGenerateInsightsBtn {
+            background: var(--student-accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: var(--shadow-xs);
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+
+        #studentGenerateInsightsBtn:hover    { background: var(--student-accent-hover); }
+        #studentGenerateInsightsBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .ai-status-msg {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        /* Insight cards (2-col grid) */
+        .ai-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .ai-card {
+            background: var(--bg-surface-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+        }
+
+        .ai-card.full-width { grid-column: 1 / -1; }
+
+        .ai-card-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--student-accent);
+            margin-bottom: 8px;
+        }
+
+        .ai-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 4px 0;
+        }
+
+        .ai-engine-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--student-subtle);
+            color: var(--student-accent);
+            border: 1px solid var(--student-border);
+            border-radius: var(--radius-sm);
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 2px 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Empty state */
+        .empty-state-block {
+            text-align: center;
+            padding: 36px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-block p { font-size: 13px; margin-top: 6px; }
+
+        /* Loading spinner */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--student-accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        /* Mobile nav toggle & overlay sidebar */
+        .mobile-nav-toggle {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 640px) {
+            .mobile-nav-toggle { display: flex; }
+
+            .sidebar {
+                position: fixed;
+                top: 0; left: 0;
+                height: 100vh;
+                z-index: 200;
+                transform: translateX(-100%);
+                transition: transform 0.25s ease;
+                width: 230px !important;
+                min-width: 0 !important;
+            }
+
+            .sidebar.open { transform: translateX(0); }
+
+            .main-content { width: 100%; }
+
+            .student-profile-banner { flex-direction: column; align-items: flex-start; }
+
+            .ai-cards-grid { grid-template-columns: 1fr; }
+            .ai-card.full-width { grid-column: auto; }
+
+            .subject-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 1080px) {
+            .student-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+<div class="app-layout">
+
+    <!-- ======================= SIDEBAR ======================= -->
+    <aside class="sidebar student-sidebar-theme">
+
+        <div class="sidebar-brand">
+            <h1>EduTrack</h1>
+            <p>Student Academic Portal</p>
+        </div>
+
+        <div class="sidebar-label">MY ACADEMICS</div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-tab="overview">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <span>Overview</span>
+            </button>
+
+            <button class="nav-item" data-tab="performance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                </svg>
+                <span>Marks &amp; Performance</span>
+            </button>
+
+            <button class="nav-item" data-tab="attendance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span>Attendance</span>
+            </button>
+
+            <button class="nav-item" data-tab="insights">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/>
+                    <circle cx="18" cy="6" r="3"/>
+                </svg>
+                <span>AI Insights</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <span id="sidebarStudentName">Student</span>
+                <small id="sidebarStudentRoll">—</small>
+            </div>
+            <div class="sidebar-portal-links">
+                <a href="/logout" class="sidebar-logout-link">Sign Out</a>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ======================= MAIN CONTENT ======================= -->
+    <main class="main-content">
+
+        <header class="content-header">
+            <div class="header-left" style="display:flex;align-items:center;gap:12px;">
+                <button class="mobile-nav-toggle" id="studentNavToggle" aria-label="Toggle navigation">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div>
+                    <p class="header-label">STUDENT PORTAL</p>
+                    <h2 id="studentPageTitle">Overview</h2>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="role-student">Student Portal</span>
+            </div>
+        </header>
+
+        <!-- ============ OVERVIEW TAB ============ -->
+        <section class="tab-panel active" id="overview">
+
+            <!-- Profile Banner -->
+            <div class="student-profile-banner" id="profileBanner">
+                <div class="profile-avatar" id="profileAvatar">?</div>
+                <div class="profile-info">
+                    <h2 id="profileName">Loading profile…</h2>
+                    <div class="profile-meta">
+                        <span class="profile-meta-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Roll: <strong id="profileRoll">—</strong>
+                        </span>
+                        <span class="profile-meta-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                            Dept: <strong id="profileDept">—</strong>
+                        </span>
+                        <span class="profile-meta-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            Year <strong id="profileYear">—</strong> &bull; Section <strong id="profileSection">—</strong>
+                        </span>
+                        <span class="profile-meta-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                            Class Advisor: <strong id="profileClassAdvisor">Not Assigned</strong>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stat cards -->
+            <div class="dashboard-stats student-stats" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:24px;">
+                <div class="stat-card stat-highlight">
+                    <div class="stat-card-header">
+                        <p>Overall Marks</p>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--student-accent)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                    </div>
+                    <h2 id="statAvgMarks">—</h2>
+                    <span class="stat-caption">Aggregate assessment score</span>
+                </div>
+
+                <div class="stat-card stat-highlight">
+                    <div class="stat-card-header">
+                        <p>Attendance</p>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--student-accent)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <h2 id="statAttendance">—</h2>
+                    <span class="stat-caption">Classes attended overall</span>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <p>Subjects Enrolled</p>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <h2 id="statSubjects">—</h2>
+                    <span class="stat-caption">Active academic subjects</span>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <p>Risk Status</p>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <h2 id="statRisk" style="font-size:18px;margin-top:4px;">—</h2>
+                    <span class="stat-caption">Academic risk classification</span>
+                </div>
+            </div>
+
+            <!-- Class Advisor Guidance Box -->
+            <div id="studentAdvisorBanner" class="shortage-banner" style="display:none;background:var(--student-subtle);border:1px solid var(--student-border);color:var(--text-primary);margin-bottom:20px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--student-accent)" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <div>
+                    <strong>Class Advisor & Academic Mentor:</strong> <span id="advisorBannerName">—</span>
+                    <div style="font-size:12px;color:var(--text-secondary);margin-top:3px;" id="advisorBannerDetails">Reach out to your assigned Class Advisor for overall academic mentoring, attendance follow-up, and support.</div>
+                </div>
+            </div>
+
+            <!-- Shortage warnings will be injected here -->
+            <div id="overviewWarnings"></div>
+
+            <!-- Mini subject performance table -->
+            <section class="table-card">
+                <h3>Subject Performance at a Glance</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Subject</th>
+                                <th>Marks %</th>
+                                <th>Attendance %</th>
+                                <th>Subject Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overviewSubjectTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </section>
+
+        <!-- ============ MARKS & PERFORMANCE TAB ============ -->
+        <section class="tab-panel" id="performance">
+            <div class="page-heading">
+                <h2>Marks &amp; Subject Performance</h2>
+                <p>Detailed assessment breakdown and subject-level performance for all enrolled courses.</p>
+            </div>
+
+            <!-- Subject performance cards -->
+            <div class="subject-grid" id="subjectCardsGrid"></div>
+
+            <!-- Full marks table -->
+            <section class="table-card" style="margin-top:22px;">
+                <h3>All Assessment Records</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Assessment</th>
+                                <th>Marks Obtained</th>
+                                <th>Max Marks</th>
+                                <th>Percentage</th>
+                                <th>Recorded On</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marksTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <!-- ============ ATTENDANCE TAB ============ -->
+        <section class="tab-panel" id="attendance">
+            <div class="page-heading">
+                <h2>Attendance Management</h2>
+                <p>Track your class attendance across all subjects. Maintain above 75% to avoid shortage warnings.</p>
+            </div>
+
+            <!-- Shortage warnings for attendance tab -->
+            <div id="attendanceWarnings"></div>
+
+            <!-- Attendance subject cards -->
+            <section class="table-card">
+                <h3>Subject-Wise Attendance</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Attended</th>
+                                <th>Total Classes</th>
+                                <th>Attendance %</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Summary strip -->
+            <div class="form-card" style="margin-top:20px;padding:18px 22px;">
+                <h3 style="margin-bottom:14px;">Overall Attendance Summary</h3>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+                    <div>
+                        <div class="stat-card-header"><p>Classes Attended</p></div>
+                        <span id="summaryAttended" style="font-size:24px;font-weight:600;color:var(--student-accent);">—</span>
+                    </div>
+                    <div>
+                        <div class="stat-card-header"><p>Total Scheduled</p></div>
+                        <span id="summaryTotal" style="font-size:24px;font-weight:600;color:var(--text-primary);">—</span>
+                    </div>
+                    <div>
+                        <div class="stat-card-header"><p>Overall Percentage</p></div>
+                        <span id="summaryPct" style="font-size:24px;font-weight:600;color:var(--student-accent);">—</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ AI INSIGHTS TAB ============ -->
+        <section class="tab-panel" id="insights">
+            <div class="page-heading">
+                <h2>AI Academic Insights</h2>
+                <p>Personalised academic analysis powered by EduTrack Lite's AI engine.</p>
+            </div>
+
+            <div class="ai-panel">
+                <div class="ai-panel-header">
+                    <div>
+                        <h3>Academic Performance Insights</h3>
+                        <p>AI-generated analysis based on your marks and attendance records.</p>
+                    </div>
+                    <button id="studentGenerateInsightsBtn">
+                        ✦ Generate Insights
+                    </button>
+                </div>
+
+                <div id="aiStatusMsg" class="ai-status-msg"></div>
+                <div id="aiInsightsOutput" hidden></div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================= JAVASCRIPT ============================= -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ── Tab navigation ─────────────────────────────────────────────────────
+    const navButtons = document.querySelectorAll("[data-tab]");
+    const panels     = document.querySelectorAll(".tab-panel");
+    const pageTitle  = document.getElementById("studentPageTitle");
+    const sidebar    = document.querySelector(".sidebar");
+    const mobileBtn  = document.getElementById("studentNavToggle");
+
+    if (mobileBtn && sidebar) {
+        mobileBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("open");
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener("click", function (e) {
+            if (!sidebar.contains(e.target) && !mobileBtn.contains(e.target)) {
+                sidebar.classList.remove("open");
+            }
+        });
+    }
+
+    function openTab(tabName) {
+        panels.forEach(p => p.classList.toggle("active", p.id === tabName));
+        navButtons.forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
+        const btn = document.querySelector(`.nav-item[data-tab="${tabName}"]`);
+        if (pageTitle && btn) {
+            const sp = btn.querySelector("span");
+            pageTitle.textContent = sp ? sp.textContent : btn.textContent;
+        }
+        if (sidebar) sidebar.classList.remove("open");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    navButtons.forEach(btn => btn.addEventListener("click", function () {
+        openTab(this.dataset.tab);
+    }));
+
+
+    // ── Utilities ──────────────────────────────────────────────────────────
+    function fmt(val, suffix) {
+        if (val === null || val === undefined) return "N/A";
+        return val + (suffix || "");
+    }
+
+    function riskBadge(level) {
+        if (!level) return "";
+        const cls = "risk-" + level.toLowerCase().replace(/\s+/g, "-");
+        return `<span class="${cls}">${level}</span>`;
+    }
+
+    function pctColor(pct) {
+        if (pct === null || pct === undefined) return "";
+        if (pct >= 75) return "att-pct-good";
+        if (pct >= 65) return "att-pct-warn";
+        return "att-pct-crit";
+    }
+
+    function barClass(pct) {
+        if (pct === null) return "";
+        if (pct >= 60) return "bar-high";
+        if (pct >= 40) return "bar-medium";
+        return "bar-low";
+    }
+
+    function initials(name) {
+        if (!name) return "?";
+        return name.trim().split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+    }
+
+    function renderBar(pct, extraClass) {
+        const w = Math.min(Math.max(pct || 0, 0), 100);
+        return `
+        <div class="perf-bar-wrap">
+            <div class="perf-bar-label">
+                <span>Progress</span><strong>${pct !== null ? pct + "%" : "N/A"}</strong>
+            </div>
+            <div class="perf-bar-bg">
+                <div class="perf-bar-fill ${extraClass || ""}" style="width:${w}%"></div>
+            </div>
+        </div>`;
+    }
+
+    function emptyRow(cols, msg) {
+        return `<tr class="empty-row"><td colspan="${cols}" class="empty-state-cell">${msg}</td></tr>`;
+    }
+
+    // Build shortage banner HTML
+    function buildShortageBanner(w) {
+        const icon = w.level === "critical" ? "⚠️" : "⚡";
+        let extra = "";
+        if (w.classes_needed_for_75 > 0) {
+            extra = `<div class="shortage-extra">You need to attend <strong>${w.classes_needed_for_75} more consecutive classes</strong> to reach the 75% threshold.</div>`;
+        }
+        return `
+        <div class="shortage-banner ${w.level}">
+            <span class="shortage-banner-icon">${icon}</span>
+            <div>
+                <strong>${escHtml(w.title)}</strong><br>
+                ${escHtml(w.message)}
+                ${extra}
+            </div>
+        </div>`;
+    }
+
+    function escHtml(s) {
+        if (!s) return "";
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+
+    // ── Load dashboard data ────────────────────────────────────────────────
+    let dashData = null;
+
+    async function loadDashboard() {
+        try {
+            const resp = await fetch("/api/student/dashboard");
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                showGlobalError(err.error || "Failed to load your academic data.");
+                return;
+            }
+            dashData = await resp.json();
+            renderAll(dashData);
+        } catch (e) {
+            showGlobalError("Network error while loading dashboard. Please refresh.");
+        }
+    }
+
+    function showGlobalError(msg) {
+        document.getElementById("profileName").textContent = msg;
+    }
+
+    function renderAll(d) {
+        const profile  = d.profile  || {};
+        const overview = d.overview || {};
+        const subjects = d.subjects || [];
+        const marks    = d.marks    || [];
+        const attendance = d.attendance || [];
+        const warnings   = d.shortage_warnings || [];
+
+        // ── Sidebar & profile ─────────────────────────────────────────────
+        const name = profile.full_name || "Student";
+        document.getElementById("sidebarStudentName").textContent = name;
+        document.getElementById("sidebarStudentRoll").textContent = profile.roll_number || "—";
+        document.getElementById("profileAvatar").textContent      = initials(name);
+        document.getElementById("profileName").textContent         = name;
+        document.getElementById("profileRoll").textContent         = profile.roll_number || "—";
+        document.getElementById("profileDept").textContent         = profile.department  || "—";
+        document.getElementById("profileYear").textContent         = profile.year || "—";
+        document.getElementById("profileSection").textContent      = profile.section || "—";
+
+        // ── Class Advisor Details ─────────────────────────────────────────
+        const advisor = d.class_advisor;
+        const profileAdvisorEl = document.getElementById("profileClassAdvisor");
+        const advisorBanner = document.getElementById("studentAdvisorBanner");
+        const advisorBannerName = document.getElementById("advisorBannerName");
+        const advisorBannerDetails = document.getElementById("advisorBannerDetails");
+
+        if (advisor && advisor.name) {
+            if (profileAdvisorEl) profileAdvisorEl.textContent = `${advisor.name} (${advisor.department || "Faculty"})`;
+            if (advisorBanner && advisorBannerName) {
+                advisorBannerName.textContent = `${advisor.name} (${advisor.department || "Faculty"})`;
+                if (advisorBannerDetails) {
+                    advisorBannerDetails.textContent = advisor.email
+                        ? `Department of ${advisor.department} • Email: ${advisor.email}`
+                        : `Department of ${advisor.department} • Reach out for mentorship, academic tracking, and support.`;
+                }
+                advisorBanner.style.display = "flex";
+            }
+        } else {
+            if (profileAdvisorEl) profileAdvisorEl.textContent = "Not Assigned";
+            if (advisorBanner) advisorBanner.style.display = "none";
+        }
+
+        // ── Overview stat cards ───────────────────────────────────────────
+        const avgM = overview.average_marks;
+        const attP = overview.overall_attendance_pct;
+        document.getElementById("statAvgMarks").textContent  = avgM !== null && avgM !== undefined ? avgM + "%" : "N/A";
+        document.getElementById("statAttendance").textContent = attP !== null && attP !== undefined ? attP + "%" : "N/A";
+        document.getElementById("statSubjects").textContent   = overview.total_subjects ?? 0;
+
+        const riskEl = document.getElementById("statRisk");
+        riskEl.innerHTML = riskBadge(overview.risk_level || "Insufficient Data");
+
+        // ── Overview warnings ─────────────────────────────────────────────
+        const owDiv = document.getElementById("overviewWarnings");
+        const awDiv = document.getElementById("attendanceWarnings");
+        // Show only overall-level warnings in overview; show all in attendance tab
+        const overallWarnings = warnings.filter(w => !w.subject_code);
+        owDiv.innerHTML = overallWarnings.map(buildShortageBanner).join("");
+        awDiv.innerHTML = warnings.map(buildShortageBanner).join("");
+
+        // ── Overview mini subject table ───────────────────────────────────
+        const osTbody = document.getElementById("overviewSubjectTable");
+        if (subjects.length === 0) {
+            osTbody.innerHTML = emptyRow(5, "No subject data recorded yet.");
+        } else {
+            osTbody.innerHTML = subjects.map(s => {
+                const mp = s.marks_percentage;
+                const ap = s.attendance_pct;
+                return `<tr>
+                    <td><span class="subject-code-badge">${escHtml(s.subject_code)}</span></td>
+                    <td>${escHtml(s.subject_name)}</td>
+                    <td>${mp !== null ? `<strong>${mp}%</strong>` : "<em>Not recorded</em>"}</td>
+                    <td class="${pctColor(ap)}">${ap !== null ? ap + "%" : "<em>Not recorded</em>"}</td>
+                    <td>${riskBadge(s.subject_risk)}</td>
+                </tr>`;
+            }).join("");
+        }
+
+        // ── Performance tab: subject cards ───────────────────────────────
+        const cardsGrid = document.getElementById("subjectCardsGrid");
+        if (subjects.length === 0) {
+            cardsGrid.innerHTML = `<div class="empty-state-block"><strong>No performance data available</strong><p>Marks have not been entered for any subject yet.</p></div>`;
+        } else {
+            cardsGrid.innerHTML = subjects.map(s => {
+                const mp = s.marks_percentage;
+                const ap = s.attendance_pct;
+                const marksBar = mp !== null ? renderBar(mp, "marks-bar " + barClass(mp)) : "<p class='subject-perf-sub'>No marks recorded</p>";
+                const attBar   = ap !== null ? renderBar(ap, "att-bar "   + barClass(ap)) : "<p class='subject-perf-sub'>No attendance recorded</p>";
+
+                // Assessment list for this subject
+                const subMarks = marks.filter(m => m.subject_id === s.subject_id);
+                let assessHtml = "";
+                if (subMarks.length > 0) {
+                    const uid = `assess-${s.subject_id}`;
+                    const rows = subMarks.map(m => `
+                        <div class="assess-row">
+                            <span class="assess-row-name">${escHtml(m.assessment_name)}</span>
+                            <span class="assess-row-score">${m.marks_obtained}/${m.max_marks} <small style="color:var(--text-muted)">(${m.percentage !== null ? m.percentage + "%" : "N/A"})</small></span>
+                        </div>`).join("");
+
+                    assessHtml = `
+                        <button class="assess-toggle" onclick="toggleAssess('${uid}')">
+                            ▸ ${subMarks.length} assessment(s)
+                        </button>
+                        <div class="assess-list" id="${uid}">${rows}</div>`;
+                }
+
+                return `
+                <div class="subject-perf-card">
+                    <div class="subject-perf-card-header">
+                        <div>
+                            <div class="subject-perf-name">${escHtml(s.subject_name)}</div>
+                            <div class="subject-perf-sub">${s.total_obtained}/${s.total_maximum} marks total</div>
+                        </div>
+                        <span class="subject-code-badge">${escHtml(s.subject_code)}</span>
+                    </div>
+                    <div class="perf-bar-label" style="margin-bottom:3px;font-size:11px;color:var(--text-muted);">MARKS PERFORMANCE</div>
+                    ${marksBar}
+                    <div class="perf-bar-label" style="margin-bottom:3px;margin-top:8px;font-size:11px;color:var(--text-muted);">ATTENDANCE</div>
+                    ${attBar}
+                    ${assessHtml}
+                </div>`;
+            }).join("");
+        }
+
+        // ── Marks full table ───────────────────────────────────────────────
+        const marksTbody = document.getElementById("marksTableBody");
+        if (marks.length === 0) {
+            marksTbody.innerHTML = emptyRow(7, "No assessment records found.");
+        } else {
+            marksTbody.innerHTML = marks.map(m => {
+                const pct = m.percentage !== null ? `<strong>${m.percentage}%</strong>` : "N/A";
+                return `<tr>
+                    <td><span class="subject-code-badge">${escHtml(m.subject_code)}</span></td>
+                    <td>${escHtml(m.subject_name)}</td>
+                    <td>${escHtml(m.assessment_name)}</td>
+                    <td><strong>${m.marks_obtained}</strong></td>
+                    <td>${m.max_marks}</td>
+                    <td>${pct}</td>
+                    <td>${m.recorded_on || "—"}</td>
+                </tr>`;
+            }).join("");
+        }
+
+        // ── Attendance table ───────────────────────────────────────────────
+        const attTbody = document.getElementById("attendanceTableBody");
+        if (attendance.length === 0) {
+            attTbody.innerHTML = emptyRow(6, "No attendance records found.");
+        } else {
+            attTbody.innerHTML = attendance.map(a => {
+                const pct = a.attendance_percentage;
+                let statusBadge;
+                if (pct === null) {
+                    statusBadge = `<span class="risk-insufficient-data">No Data</span>`;
+                } else if (pct >= 75) {
+                    statusBadge = `<span class="risk-low">Good</span>`;
+                } else if (pct >= 65) {
+                    statusBadge = `<span class="risk-medium">Warning</span>`;
+                } else {
+                    statusBadge = `<span class="risk-high">Critical</span>`;
+                }
+                return `<tr>
+                    <td><span class="subject-code-badge">${escHtml(a.subject_code)}</span></td>
+                    <td>${escHtml(a.subject_name)}</td>
+                    <td><strong>${a.attended_classes}</strong></td>
+                    <td>${a.total_classes}</td>
+                    <td class="${pctColor(pct)}">${pct !== null ? pct + "%" : "N/A"}</td>
+                    <td>${statusBadge}</td>
+                </tr>`;
+            }).join("");
+        }
+
+        // ── Attendance summary ─────────────────────────────────────────────
+        document.getElementById("summaryAttended").textContent = overview.total_classes_attended ?? "—";
+        document.getElementById("summaryTotal").textContent    = overview.total_classes_scheduled ?? "—";
+        const spct = overview.overall_attendance_pct;
+        const spctEl = document.getElementById("summaryPct");
+        spctEl.textContent = spct !== null && spct !== undefined ? spct + "%" : "N/A";
+        if (spct !== null) {
+            spctEl.style.color = spct >= 75 ? "var(--risk-low-text)" : spct >= 65 ? "var(--risk-medium-text)" : "var(--risk-high-text)";
+        }
+    }
+
+
+    // ── Assessment accordion toggle ────────────────────────────────────────
+    window.toggleAssess = function (uid) {
+        const el = document.getElementById(uid);
+        if (!el) return;
+        el.classList.toggle("open");
+        const btn = el.previousElementSibling;
+        if (btn) btn.textContent = btn.textContent.replace(/[▸▾]/, el.classList.contains("open") ? "▾" : "▸");
+    };
+
+
+    // ── AI Insights ────────────────────────────────────────────────────────
+    const insightsBtn = document.getElementById("studentGenerateInsightsBtn");
+    const statusMsg   = document.getElementById("aiStatusMsg");
+    const outputDiv   = document.getElementById("aiInsightsOutput");
+
+    insightsBtn.addEventListener("click", async function () {
+        insightsBtn.disabled = true;
+        insightsBtn.innerHTML = `<span class="spinner"></span> Generating…`;
+        statusMsg.textContent = "Analysing your academic records…";
+        outputDiv.hidden = true;
+        outputDiv.innerHTML = "";
+
+        try {
+            const resp = await fetch("/api/student/ai-insights", { method: "POST" });
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                statusMsg.textContent = "⚠ " + (data.error || "Unable to generate insights.");
+                insightsBtn.disabled = false;
+                insightsBtn.innerHTML = "✦ Generate Insights";
+                return;
+            }
+
+            statusMsg.textContent = "";
+            renderInsights(data);
+            outputDiv.hidden = false;
+        } catch (e) {
+            statusMsg.textContent = "⚠ Network error. Please try again.";
+        } finally {
+            insightsBtn.disabled = false;
+            insightsBtn.innerHTML = "✦ Regenerate Insights";
+        }
+    });
+
+
+    function renderInsights(data) {
+        const engine  = data.engine || "heuristic_fallback";
+        const rawText = data.insights || "";
+        const risk    = data.risk_level || "";
+
+        const engineLabel = engine === "ollama"
+            ? "⚡ Ollama AI Engine"
+            : "🔍 Academic Heuristic Engine";
+
+        // Parse the structured text into sections
+        const sections = parseInsightSections(rawText);
+
+        let html = `
+        <span class="ai-engine-tag">${engineLabel}</span>
+        ${data.notice ? `<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">${escHtml(data.notice)}</p>` : ""}
+        <div class="ai-cards-grid">`;
+
+        const sectionDefs = [
+            { key: "Risk Classification Explanation", label: "Risk Classification" },
+            { key: "Visible Strengths",                label: "Academic Strengths"   },
+            { key: "Areas Needing Improvement",        label: "Areas to Improve"     },
+            { key: "Practical and Supportive Recommendations", label: "Recommendations" }
+        ];
+
+        const usedSections = new Set();
+
+        sectionDefs.forEach((def, idx) => {
+            const content = sections[def.key] || "";
+            if (!content && Object.keys(sections).length === 0) return;
+            const isFirst = idx === 0;
+            const cls = isFirst ? "ai-card full-width" : "ai-card";
+            const bodyHtml = content
+                ? formatInsightContent(content)
+                : `<p><em>No specific information available for this section.</em></p>`;
+
+            html += `<div class="${cls}"><div class="ai-card-label">${def.label}</div>${bodyHtml}</div>`;
+            usedSections.add(def.key);
+        });
+
+        // If parsing yielded nothing, show raw text
+        if (Object.keys(sections).length === 0) {
+            html += `<div class="ai-card full-width"><div class="ai-card-label">Analysis</div>${formatInsightContent(rawText)}</div>`;
+        }
+
+        html += "</div>";
+        outputDiv.innerHTML = html;
+    }
+
+
+    function parseInsightSections(text) {
+        const result = {};
+        // Match headings like "1. Risk Classification Explanation" or "2. Visible Strengths"
+        const pattern = /^\s*\d+\.\s+(.+)$/gm;
+        const positions = [];
+        let match;
+
+        while ((match = pattern.exec(text)) !== null) {
+            positions.push({ title: match[1].trim(), start: match.index + match[0].length });
+        }
+
+        positions.forEach((pos, i) => {
+            const end = i + 1 < positions.length ? positions[i + 1].start - positions[i + 1].title.length - 10 : text.length;
+            const content = text.slice(pos.start, end).trim();
+
+            // Map partial match to full section key
+            const keyMap = {
+                "Risk Classification": "Risk Classification Explanation",
+                "Visible Strengths":   "Visible Strengths",
+                "Areas Needing":       "Areas Needing Improvement",
+                "Practical":           "Practical and Supportive Recommendations",
+                "Recommendations":     "Practical and Supportive Recommendations"
+            };
+
+            let resolvedKey = pos.title;
+            for (const [partial, full] of Object.entries(keyMap)) {
+                if (pos.title.startsWith(partial)) { resolvedKey = full; break; }
+            }
+
+            result[resolvedKey] = content;
+        });
+
+        return result;
+    }
+
+
+    function formatInsightContent(text) {
+        if (!text) return "";
+        // Convert numbered list items to <ol><li>
+        const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+        let html = "";
+        let inList = false;
+
+        lines.forEach(line => {
+            if (/^\d+\.\s/.test(line)) {
+                if (!inList) { html += "<ol>"; inList = true; }
+                html += `<li>${escHtml(line.replace(/^\d+\.\s/, ""))}</li>`;
+            } else if (line.startsWith("- ") || line.startsWith("• ")) {
+                if (!inList) { html += "<ul>"; inList = true; }
+                html += `<li>${escHtml(line.slice(2))}</li>`;
+            } else {
+                if (inList) { html += inList ? (html.includes("<ol>") ? "</ol>" : "</ul>") : ""; inList = false; }
+                html += `<p>${escHtml(line)}</p>`;
+            }
+        });
+
+        if (inList) html += "</ol>";
+        return html;
+    }
+
+
+    // ── Boot ───────────────────────────────────────────────────────────────
+    loadDashboard();
+});
+</script>
+
+</body>
+</html>

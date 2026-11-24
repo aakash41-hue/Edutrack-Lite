@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack | Faculty Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dashboard-layout">
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar faculty-sidebar-theme">
+
+        <div class="sidebar-brand">
+            <h1>EduTrack</h1>
+            <p>Faculty Teaching Portal</p>
+        </div>
+
+        <div class="sidebar-label">MY WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-tab="overview">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <span>Overview</span>
+            </button>
+
+            <button class="nav-item" data-tab="subjects">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                <span>My Subjects</span>
+            </button>
+
+            <button class="nav-item" data-tab="students">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>My Students</span>
+            </button>
+
+            <button class="nav-item" data-tab="advisees">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+                <span>My Advisees</span>
+            </button>
+
+            <button class="nav-item" data-tab="marks">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>Marks</span>
+            </button>
+
+            <button class="nav-item" data-tab="attendance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span>Attendance</span>
+            </button>
+
+            <button class="nav-item" data-tab="performance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                </svg>
+                <span>Performance</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <span id="sidebarFacultyName">Faculty Member</span>
+                <small id="sidebarFacultyDept">Department of CSE</small>
+            </div>
+            <div class="sidebar-portal-links">
+                <a href="/" class="sidebar-portal-link">&larr; Coordinator Portal</a>
+                <a href="/logout" class="sidebar-logout-link">Sign Out</a>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="content-header">
+            <div class="header-left">
+                <button class="mobile-nav-toggle" id="facultyNavToggle" aria-label="Toggle navigation">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div>
+                    <p class="header-label">FACULTY WORKSPACE</p>
+                    <h2 id="facultyPageTitle">Overview</h2>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="role-badge role-faculty">Faculty Portal</span>
+            </div>
+        </header>
+
+        <!-- OVERVIEW TAB -->
+        <section class="tab-panel active" id="overview">
+
+            <div class="welcome-section">
+                <h2 id="welcomeFacultyHeader">Welcome to Your Academic Portal</h2>
+                <p>Manage your assigned course sections, record assessments, track student attendance, and identify students needing academic assistance.</p>
+            </div>
+
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <p>Assigned Subjects</p>
+                    <h2 id="facultySubjectCount">0</h2>
+                    <span class="stat-caption">Active curriculum allocations</span>
+                </div>
+
+                <div class="stat-card">
+                    <p>Enrolled Students</p>
+                    <h2 id="facultyStudentCount">0</h2>
+                    <span class="stat-caption">Across your assigned sections</span>
+                </div>
+
+                <div class="stat-card">
+                    <p>Marks Recorded</p>
+                    <h2 id="facultyMarksCount">0</h2>
+                    <span class="stat-caption">Assessment scores entered</span>
+                </div>
+
+                <div class="stat-card">
+                    <p>Attendance Records</p>
+                    <h2 id="facultyAttendanceCount">0</h2>
+                    <span class="stat-caption">Class attendance updates</span>
+                </div>
+
+                <div class="stat-card">
+                    <p>My Advisees</p>
+                    <h2 id="facultyAdviseesCount">0</h2>
+                    <span class="stat-caption">Mentorship & guidance students</span>
+                </div>
+            </div>
+
+            <!-- Quick Overview Tables -->
+            <div class="charts-grid">
+                <section class="table-card">
+                    <h3>Teaching Allocations</h3>
+                    <p class="table-subtext">Courses and class sections assigned to your teaching load.</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Course Name</th>
+                                    <th>Year</th>
+                                    <th>Section</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overviewAssignmentsList"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="table-card">
+                    <h3>At-Risk Students Watchlist</h3>
+                    <p class="table-subtext">Students in your assigned classes flagged for academic or attendance follow-up.</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Student Name</th>
+                                    <th>Risk Level</th>
+                                    <th>Analysis</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overviewRiskWatchlist"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </section>
+
+        <!-- SUBJECTS TAB -->
+        <section class="tab-panel" id="subjects">
+            <div class="page-heading">
+                <h2>My Assigned Subjects</h2>
+                <p>Review the courses and class sections assigned to you by the department coordinator.</p>
+            </div>
+
+            <section class="table-card">
+                <h3>Current Course Allocations</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Academic Year</th>
+                                <th>Section</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facultySubjectsList"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <!-- STUDENTS TAB -->
+        <section class="tab-panel" id="students">
+            <div class="page-heading">
+                <h2>My Students</h2>
+                <p>Students enrolled in subjects you teach. Filter by subject to see the specific roster for each course.</p>
+            </div>
+
+            <!-- Search & Subject Filter -->
+            <section class="filter-card">
+                <div class="filter-heading">
+                    <h3>Find Students</h3>
+                    <p>Search by name or roll number, or filter by an assigned subject.</p>
+                </div>
+                <div class="student-filters">
+                    <div style="flex: 2;">
+                        <label for="facultyStudentSearch">Search Students</label>
+                        <input type="text" id="facultyStudentSearch" placeholder="Search by name or roll number...">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="facultyStudentSubjectFilter">Filter by Subject</label>
+                        <select id="facultyStudentSubjectFilter">
+                            <option value="">All Subjects</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="table-card">
+                <h3>Class Roster</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Department</th>
+                                <th>Year / Section</th>
+                                <th>Enrolled Subjects</th>
+                                <th>Avg Marks</th>
+                                <th>Attendance</th>
+                                <th>Risk</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facultyStudentsList"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <!-- ADVISEES TAB -->
+        <section class="tab-panel" id="advisees">
+            <div class="page-heading">
+                <h2>My Advisee Students</h2>
+                <p>Monitor academic performance, attendance records, and risk indicators for your assigned advisees.</p>
+            </div>
+
+            <!-- Advisee Search & Filter -->
+            <section class="filter-card">
+                <div class="filter-heading">
+                    <h3>Find Advisees</h3>
+                    <p>Search by student name or roll number.</p>
+                </div>
+                <div class="student-filters">
+                    <div style="flex: 1;">
+                        <label for="facultyAdviseeSearch">Search Advisees</label>
+                        <input type="text" id="facultyAdviseeSearch" placeholder="Search advisees by name or roll number...">
+                    </div>
+                </div>
+            </section>
+
+            <section class="table-card">
+                <h3>Assigned Advisees Roster</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Department</th>
+                                <th>Year & Section</th>
+                                <th>Average Score</th>
+                                <th>Attendance %</th>
+                                <th>Academic Risk</th>
+                                <th>Mentorship</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facultyAdviseesList"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <!-- MARKS TAB -->
+        <section class="tab-panel" id="marks">
+            <div class="page-heading">
+                <h2>Marks Management</h2>
+                <p>Record and review assessment scores for students in your assigned classes.</p>
+            </div>
+
+            <section class="form-card">
+                <h3>Record Assessment Score</h3>
+                <form id="facultyMarksForm">
+                    <div class="form-grid">
+                        <div>
+                            <label for="facultyMarkStudent">Select Student *</label>
+                            <select id="facultyMarkStudent" required>
+                                <option value="">Choose student from class</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="facultyMarkSubject">Select Subject *</label>
+                            <select id="facultyMarkSubject" required>
+                                <option value="">Choose course</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="facultyAssessmentName">Assessment Title *</label>
+                            <input type="text" id="facultyAssessmentName" placeholder="Example: Mid Term Test" required>
+                        </div>
+
+                        <div>
+                            <label for="facultyMarksObtained">Marks Obtained *</label>
+                            <input type="number" id="facultyMarksObtained" min="0" step="0.01" placeholder="Score" required>
+                        </div>
+
+                        <div>
+                            <label for="facultyMaxMarks">Maximum Marks *</label>
+                            <input type="number" id="facultyMaxMarks" min="0.01" step="0.01" placeholder="Max" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="saveFacultyMarksBtn">Save Assessment Marks</button>
+                    <p id="facultyMarksMessage" class="form-message"></p>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h3>Recorded Assessment Scores</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Course</th>
+                                <th>Assessment</th>
+                                <th>Marks</th>
+                                <th>Max Marks</th>
+                                <th>Recorded On</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facultyMarksList"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <!-- ATTENDANCE TAB -->
+        <section class="tab-panel" id="attendance">
+            <div class="page-heading">
+                <h2>Attendance Management</h2>
+                <p>Record and update student class attendance for your assigned subjects.</p>
+            </div>
+
+            <section class="form-card">
+                <h3>Record or Update Attendance</h3>
+                <form id="facultyAttendanceForm">
+                    <div class="form-grid">
+                        <div>
+                            <label for="facultyAttendanceStudent">Select Student *</label>
+                            <select id="facultyAttendanceStudent" required>
+                                <option value="">Choose student</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="facultyAttendanceSubject">Select Subject *</label>
+                            <select id="facultyAttendanceSubject" required>
+                                <option value="">Choose course</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="facultyTotalClasses">Total Scheduled Classes *</label>
+                            <input type="number" id="facultyTotalClasses" min="1" placeholder="Example: 30" required>
+                        </div>
+
+                        <div>
+                            <label for="facultyAttendedClasses">Classes Attended *</label>
+                            <input type="number" id="facultyAttendedClasses" min="0" placeholder="Example: 26" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="saveFacultyAttendanceBtn">Save Attendance</button>
+                    <p id="facultyAttendanceMessage" class="form-message"></p>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h3>Class Attendance Records</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Subject</th>
+                                <th>Total Classes</th>
+                                <th>Attended</th>
+                                <th>Attendance %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facultyAttendanceList"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <!-- PERFORMANCE TAB -->
+        <section class="tab-panel" id="performance">
+            <div class="page-heading">
+                <h2>Student Performance & Risk Overview</h2>
+                <p>Comprehensive performance metrics and AI risk analysis for students in your courses.</p>
+            </div>
+
+            <section class="table-card">
+                <h3>Enrolled Students Performance Summary</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Average Marks</th>
+                                <th>Attendance %</th>
+                                <th>Risk Level</th>
+                                <th>AI Analysis</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facultyPerformanceList"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Tab Navigation
+    const navButtons = document.querySelectorAll("[data-tab]");
+    const panels = document.querySelectorAll(".tab-panel");
+    const pageTitle = document.getElementById("facultyPageTitle");
+    const mobileToggle = document.getElementById("facultyNavToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener("click", function() {
+            sidebar.classList.toggle("open");
+        });
+    }
+
+    function openTab(tabName) {
+        panels.forEach(panel => {
+            panel.classList.toggle("active", panel.id === tabName);
+        });
+
+        navButtons.forEach(button => {
+            button.classList.toggle("active", button.dataset.tab === tabName);
+        });
+
+        const activeBtn = document.querySelector(`.nav-item[data-tab="${tabName}"]`);
+        if (pageTitle && activeBtn) {
+            const span = activeBtn.querySelector("span");
+            pageTitle.textContent = span ? span.textContent : activeBtn.textContent;
+        }
+
+        if (sidebar) sidebar.classList.remove("open");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    navButtons.forEach(btn => {
+        btn.addEventListener("click", function() {
+            openTab(this.dataset.tab);
+        });
+    });
+
+    let facultyData = null;
+
+    async function loadFacultyDashboard() {
+        try {
+            const resp = await fetch("/api/faculty/0/dashboard");
+            if (!resp.ok) {
+                console.error("Failed to load faculty dashboard data");
+                return;
+            }
+
+            facultyData = await resp.json();
+            const fac = facultyData.faculty || {};
+            const stats = facultyData.statistics || {};
+            const assignments = facultyData.assignments || [];
+            const students = facultyData.students || [];
+            const marks = facultyData.marks || [];
+            const attendance = facultyData.attendance || [];
+            const performance = facultyData.performance || [];
+
+            // Update Header & Sidebar
+            if (fac.full_name) {
+                document.getElementById("sidebarFacultyName").textContent = fac.full_name;
+                document.getElementById("sidebarFacultyDept").textContent = `Department of ${fac.department}`;
+                document.getElementById("welcomeFacultyHeader").textContent = `Welcome Back, ${fac.full_name}!`;
+            }
+
+            // Update Stat Cards
+            document.getElementById("facultySubjectCount").textContent = stats.assigned_subjects || 0;
+            document.getElementById("facultyStudentCount").textContent = stats.assigned_students || 0;
+            document.getElementById("facultyMarksCount").textContent = stats.marks_recorded || 0;
+            document.getElementById("facultyAttendanceCount").textContent = stats.attendance_records || 0;
+            const advisees = facultyData.advisees || [];
+            const adviseesCountEl = document.getElementById("facultyAdviseesCount");
+            if (adviseesCountEl) adviseesCountEl.textContent = advisees.length;
+
+            // Overview Allocations
+            const overviewAssignmentsList = document.getElementById("overviewAssignmentsList");
+            overviewAssignmentsList.innerHTML = "";
+            if (assignments.length === 0) {
+                overviewAssignmentsList.innerHTML = '<tr class="empty-row"><td colspan="4" class="empty-state-cell">No teaching allocations assigned yet.</td></tr>';
+            } else {
+                assignments.forEach(a => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<td><strong>${a.subject_code}</strong></td><td>${a.subject_name}</td><td>Year ${a.year}</td><td>Section ${a.section}</td>`;
+                    overviewAssignmentsList.appendChild(tr);
+                });
+            }
+
+            // Overview Risk Watchlist
+            const overviewRiskWatchlist = document.getElementById("overviewRiskWatchlist");
+            overviewRiskWatchlist.innerHTML = "";
+            const atRiskStudents = performance.filter(p => p.risk_level === "High" || p.risk_level === "Medium");
+            if (atRiskStudents.length === 0) {
+                overviewRiskWatchlist.innerHTML = '<tr class="empty-row"><td colspan="4" class="empty-state-cell">No students currently flagged in High or Medium risk status.</td></tr>';
+            } else {
+                atRiskStudents.forEach(p => {
+                    const tr = document.createElement("tr");
+                    const riskClass = "risk-" + p.risk_level.toLowerCase().replaceAll(" ", "-");
+                    tr.innerHTML = `<td>${p.roll_number}</td><td>${p.student_name}</td><td><span class="${riskClass}">${p.risk_level}</span></td><td><a href="/student-analysis?id=${p.student_id}" class="analysis-link">Analyze &rarr;</a></td>`;
+                    overviewRiskWatchlist.appendChild(tr);
+                });
+            }
+
+            // Subjects Table
+            const facultySubjectsList = document.getElementById("facultySubjectsList");
+            facultySubjectsList.innerHTML = "";
+            if (assignments.length === 0) {
+                facultySubjectsList.innerHTML = '<tr class="empty-row"><td colspan="4" class="empty-state-cell">No assigned subjects found.</td></tr>';
+            } else {
+                assignments.forEach(a => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<td><strong>${a.subject_code}</strong></td><td>${a.subject_name}</td><td>Year ${a.year}</td><td>Section ${a.section}</td>`;
+                    facultySubjectsList.appendChild(tr);
+                });
+            }
+
+            // Students Table — with search + subject filter
+            const facultyStudentsList = document.getElementById("facultyStudentsList");
+            const studentSearchEl = document.getElementById("facultyStudentSearch");
+            const studentSubjectFilterEl = document.getElementById("facultyStudentSubjectFilter");
+
+            // Populate subject filter dropdown from assignments
+            if (studentSubjectFilterEl) {
+                studentSubjectFilterEl.innerHTML = '<option value="">All Subjects</option>';
+                assignments.forEach(a => {
+                    const opt = document.createElement("option");
+                    opt.value = a.subject_id;
+                    opt.textContent = `${a.subject_name} (Year ${a.year} - Sec ${a.section})`;
+                    studentSubjectFilterEl.appendChild(opt);
+                });
+            }
+
+            function renderStudents(list) {
+                facultyStudentsList.innerHTML = "";
+                if (list.length === 0) {
+                    facultyStudentsList.innerHTML = '<tr class="empty-row"><td colspan="9" class="empty-state-cell">No enrolled students match the current filter.</td></tr>';
+                    return;
+                }
+                list.forEach(st => {
+                    const tr = document.createElement("tr");
+                    const name = st.full_name || st.student_name || "—";
+                    const dept = st.department || "—";
+                    const yr = st.year || "—";
+                    const sec = st.section || "—";
+                    const avg = st.average_marks !== null && st.average_marks !== undefined ? `${st.average_marks}%` : "—";
+                    const att = st.attendance_percentage !== null && st.attendance_percentage !== undefined ? `${st.attendance_percentage}%` : "—";
+                    const riskLevel = st.risk_level || "Insufficient Data";
+                    const riskClass = "risk-" + riskLevel.toLowerCase().replaceAll(" ", "-");
+                    // Enrolled subjects for this student (in this faculty's courses)
+                    const subjList = (st.enrolled_subjects || []).map(s => s.subject_code || s.subject_name).join(", ") || "—";
+                    tr.innerHTML = `<td>${st.roll_number}</td><td><strong>${name}</strong></td><td>${dept}</td><td>Year ${yr} - ${sec}</td><td style="font-size:0.82rem;max-width:140px;">${subjList}</td><td>${avg}</td><td>${att}</td><td><span class="${riskClass}">${riskLevel}</span></td><td><a href="/student-analysis?id=${st.student_id}" class="analysis-link">View Analysis</a></td>`;
+                    facultyStudentsList.appendChild(tr);
+                });
+            }
+
+            function applyStudentFilters() {
+                const q = (studentSearchEl ? studentSearchEl.value.trim().toLowerCase() : "");
+                const subjectId = studentSubjectFilterEl ? parseInt(studentSubjectFilterEl.value) : NaN;
+                let list = students;
+                if (q) {
+                    list = list.filter(st =>
+                        ((st.full_name || st.student_name || "").toLowerCase().includes(q)) ||
+                        (String(st.roll_number || "").toLowerCase().includes(q))
+                    );
+                }
+                if (!isNaN(subjectId) && subjectId) {
+                    list = list.filter(st =>
+                        Array.isArray(st.enrolled_subject_ids) && st.enrolled_subject_ids.includes(subjectId)
+                    );
+                }
+                renderStudents(list);
+            }
+
+            renderStudents(students);
+
+            if (studentSearchEl) studentSearchEl.oninput = applyStudentFilters;
+            if (studentSubjectFilterEl) studentSubjectFilterEl.onchange = applyStudentFilters;
+
+            // Advisees Table
+            const facultyAdviseesList = document.getElementById("facultyAdviseesList");
+            function renderAdvisees(list) {
+                if (!facultyAdviseesList) return;
+                facultyAdviseesList.innerHTML = "";
+                if (list.length === 0) {
+                    facultyAdviseesList.innerHTML = '<tr class="empty-row"><td colspan="8" class="empty-state-cell">No advisee students assigned to your guidance currently.</td></tr>';
+                    return;
+                }
+                list.forEach(adv => {
+                    const tr = document.createElement("tr");
+                    const riskClass = "risk-" + (adv.risk_level || "low").toLowerCase().replaceAll(" ", "-");
+                    const avgScore = adv.average_marks !== null && adv.average_marks !== undefined ? `${adv.average_marks}%` : "Not recorded";
+                    const attScore = adv.attendance_percentage !== null && adv.attendance_percentage !== undefined ? `${adv.attendance_percentage}%` : "Not recorded";
+                    tr.innerHTML = `<td><strong>${adv.roll_number}</strong></td><td>${adv.full_name}</td><td>${adv.department}</td><td>Year ${adv.year}${adv.section ? " - " + adv.section : ""}</td><td><strong>${avgScore}</strong></td><td><strong>${attScore}</strong></td><td><span class="${riskClass}">${adv.risk_level || "Low"}</span></td><td><a href="/student-analysis?id=${adv.student_id}" class="analysis-link">Mentorship Analysis &rarr;</a></td>`;
+                    facultyAdviseesList.appendChild(tr);
+                });
+            }
+            renderAdvisees(advisees);
+
+            const adviseeSearch = document.getElementById("facultyAdviseeSearch");
+            if (adviseeSearch) {
+                adviseeSearch.oninput = function() {
+                    const q = this.value.trim().toLowerCase();
+                    const filtered = advisees.filter(a =>
+                        (a.full_name && a.full_name.toLowerCase().includes(q)) ||
+                        (a.roll_number && String(a.roll_number).toLowerCase().includes(q))
+                    );
+                    renderAdvisees(filtered);
+                };
+            }
+
+            // Populate Form Dropdowns
+            const markStudentSelect = document.getElementById("facultyMarkStudent");
+            const attStudentSelect = document.getElementById("facultyAttendanceStudent");
+            markStudentSelect.innerHTML = '<option value="">Choose student from class</option>';
+            attStudentSelect.innerHTML = '<option value="">Choose student</option>';
+            students.forEach(st => {
+                const opt1 = document.createElement("option");
+                opt1.value = st.student_id;
+                // Handle both raw (full_name) and enriched (student_name) response shapes
+                const displayName = st.full_name || st.student_name || "Unknown";
+                opt1.textContent = `${st.roll_number} - ${displayName} (Sec ${st.section || "A"})`;
+                markStudentSelect.appendChild(opt1);
+
+                const opt2 = opt1.cloneNode(true);
+                attStudentSelect.appendChild(opt2);
+            });
+
+            const markSubSelect = document.getElementById("facultyMarkSubject");
+            const attSubSelect = document.getElementById("facultyAttendanceSubject");
+            markSubSelect.innerHTML = '<option value="">Choose course</option>';
+            attSubSelect.innerHTML = '<option value="">Choose course</option>';
+            const uniqueSubMap = new Map();
+            assignments.forEach(a => {
+                uniqueSubMap.set(a.subject_id, `${a.subject_code} - ${a.subject_name}`);
+            });
+            uniqueSubMap.forEach((name, id) => {
+                const opt = document.createElement("option");
+                opt.value = id;
+                opt.textContent = name;
+                markSubSelect.appendChild(opt);
+
+                const opt2 = opt.cloneNode(true);
+                attSubSelect.appendChild(opt2);
+            });
+
+            // Marks Table
+            const facultyMarksList = document.getElementById("facultyMarksList");
+            facultyMarksList.innerHTML = "";
+            if (marks.length === 0) {
+                facultyMarksList.innerHTML = '<tr class="empty-row"><td colspan="7" class="empty-state-cell">No assessment scores recorded yet.</td></tr>';
+            } else {
+                marks.forEach(m => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<td>${m.roll_number}</td><td>${m.full_name}</td><td>${m.subject_code}</td><td>${m.assessment_name}</td><td><strong>${m.marks_obtained}</strong></td><td>${m.max_marks}</td><td>${m.recorded_on || "-"}</td>`;
+                    facultyMarksList.appendChild(tr);
+                });
+            }
+
+            // Attendance Table
+            const facultyAttendanceList = document.getElementById("facultyAttendanceList");
+            facultyAttendanceList.innerHTML = "";
+            if (attendance.length === 0) {
+                facultyAttendanceList.innerHTML = '<tr class="empty-row"><td colspan="6" class="empty-state-cell">No class attendance records found.</td></tr>';
+            } else {
+                attendance.forEach(att => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<td>${att.roll_number}</td><td>${att.full_name}</td><td>${att.subject_code}</td><td>${att.total_classes}</td><td>${att.attended_classes}</td><td><strong>${att.attendance_percentage}%</strong></td>`;
+                    facultyAttendanceList.appendChild(tr);
+                });
+            }
+
+            // Performance Table
+            const facultyPerformanceList = document.getElementById("facultyPerformanceList");
+            facultyPerformanceList.innerHTML = "";
+            if (performance.length === 0) {
+                facultyPerformanceList.innerHTML = '<tr class="empty-row"><td colspan="6" class="empty-state-cell">No performance records available for enrolled students.</td></tr>';
+            } else {
+                performance.forEach(p => {
+                    const tr = document.createElement("tr");
+                    const riskClass = "risk-" + p.risk_level.toLowerCase().replaceAll(" ", "-");
+                    tr.innerHTML = `<td>${p.roll_number}</td><td><strong>${p.student_name}</strong></td><td>${p.average_marks !== null ? p.average_marks + "%" : "Not recorded"}</td><td>${p.attendance_percentage !== null ? p.attendance_percentage + "%" : "Not recorded"}</td><td><span class="${riskClass}">${p.risk_level}</span></td><td><a href="/student-analysis?id=${p.student_id}" class="analysis-link">Individual Analysis &rarr;</a></td>`;
+                    facultyPerformanceList.appendChild(tr);
+                });
+            }
+
+        } catch (err) {
+            console.error("Error loading faculty dashboard:", err);
+        }
+    }
+
+    // Save Marks Handler
+    const marksForm = document.getElementById("facultyMarksForm");
+    const marksMsg = document.getElementById("facultyMarksMessage");
+    if (marksForm) {
+        marksForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const payload = {
+                student_id: document.getElementById("facultyMarkStudent").value,
+                subject_id: document.getElementById("facultyMarkSubject").value,
+                assessment_name: document.getElementById("facultyAssessmentName").value.trim(),
+                marks_obtained: parseFloat(document.getElementById("facultyMarksObtained").value),
+                max_marks: parseFloat(document.getElementById("facultyMaxMarks").value)
+            };
+
+            try {
+                const resp = await fetch("/api/marks", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const res = await resp.json();
+                if (!resp.ok) {
+                    marksMsg.textContent = res.error || "Unable to save marks.";
+                    return;
+                }
+                marksMsg.textContent = res.message || "Marks recorded successfully!";
+                marksForm.reset();
+                await loadFacultyDashboard();
+            } catch (err) {
+                marksMsg.textContent = "Network error saving marks.";
+            }
+        });
+    }
+
+    // Save Attendance Handler
+    const attForm = document.getElementById("facultyAttendanceForm");
+    const attMsg = document.getElementById("facultyAttendanceMessage");
+    if (attForm) {
+        attForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const payload = {
+                student_id: document.getElementById("facultyAttendanceStudent").value,
+                subject_id: document.getElementById("facultyAttendanceSubject").value,
+                total_classes: parseInt(document.getElementById("facultyTotalClasses").value, 10),
+                attended_classes: parseInt(document.getElementById("facultyAttendedClasses").value, 10)
+            };
+
+            try {
+                const resp = await fetch("/api/attendance", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const res = await resp.json();
+                if (!resp.ok) {
+                    attMsg.textContent = res.error || "Unable to save attendance.";
+                    return;
+                }
+                attMsg.textContent = res.message || "Attendance recorded successfully!";
+                attForm.reset();
+                await loadFacultyDashboard();
+            } catch (err) {
+                attMsg.textContent = "Network error saving attendance.";
+            }
+        });
+    }
+
+    // Initial Load
+    loadFacultyDashboard();
+
+});
+</script>
+
+</body>
+</html>
