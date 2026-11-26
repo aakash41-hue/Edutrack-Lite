@@ -9,7 +9,7 @@ import urllib.request
 import urllib.error
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=".")
 app.secret_key = "edutrack_lite_secret_college_submission_key_2026"
 
 # Initialize the SQLite database
